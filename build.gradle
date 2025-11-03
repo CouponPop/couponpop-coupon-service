@@ -1,7 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.4.11'
+    id 'org.springframework.boot' version '3.4.10'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+}
+
+jacoco {
+    toolVersion = "0.8.14"
 }
 
 group = 'com.couponpop'
@@ -37,4 +42,73 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+def jacocoExcludes = [
+        // --- Spring Boot/JPA 관련 ---
+        '**/configuration/**',
+        '**/config/**',
+        '**/dto/**',
+        '**/exception/**',
+        '**/error/**',
+        '**/filter/**',
+        '**/handler/**',
+        '**/security/**',
+        '**/util/**',
+
+        // --- QueryDSL 관련 ---
+        '**/Q*.class',
+
+        // --- 기타 생성 코드 ---
+        '**/*Application.class',
+        '**/Test*.class',
+
+        // --- Flyway 관련 ---
+        '**/db/migration/**',
+
+        // --- Swagger 관련 ---
+        '**/static/docs/**',
+]
+
+afterEvaluate {
+    def configureExclusions = {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: jacocoExcludes)
+                })
+        )
+    }
+    tasks.named('jacocoTestReport', JacocoReport).configure(configureExclusions)
+    tasks.named('jacocoTestCoverageVerification', JacocoCoverageVerification).configure(configureExclusions)
+}
+
+tasks.named('jacocoTestReport', JacocoReport) {
+    dependsOn test
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation.set(layout.buildDirectory.dir('jacocoHtml'))
+    }
+}
+
+tasks.named("jacocoTestCoverageVerification", JacocoCoverageVerification) {
+    dependsOn tasks.named('jacocoTestReport')
+    violationRules {
+        rule {
+            enabled = true
+            element = 'BUNDLE'
+            limit {
+                counter = 'LINE'
+                minimum = 0.60
+            } // BUNDLE 기준 line covered ratio 60% 이상
+        }
+    }
+}
+
+tasks.named('build') {
+    dependsOn 'jacocoTestCoverageVerification'
+    doLast {
+        println "Build completed with coverage verification"
+    }
 }
