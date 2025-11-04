@@ -1,0 +1,13 @@
+CREATE TABLE coupon_events
+(
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='쿠폰 이벤트 테이블';
+
+CREATE TABLE coupons
+(
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='쿠폰 테이블';
