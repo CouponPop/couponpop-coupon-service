@@ -94,7 +94,7 @@ class CouponEventControllerTest {
 
         // when & then
         mockMvc.perform(
-                        post("/api/v1/owner/events")
+                        post("/api/v1/owner/coupons/events")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -128,7 +128,7 @@ class CouponEventControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/api/v1/owner/events/{eventId}", eventId)
+                        get("/api/v1/owner/coupons/events/{eventId}", eventId)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -181,7 +181,8 @@ class CouponEventControllerTest {
         // when & then
         // 첫 페이지 호출
         mockMvc.perform(
-                        get("/api/v1/owner/stores/{storeId}/events", storeId)
+                        get("/api/v1/owner/coupons/events")
+                                .param("storeId", "1")
                                 .param("size", "10")
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -191,7 +192,8 @@ class CouponEventControllerTest {
 
         // 두 번째 페이지 호출
         mockMvc.perform(
-                        get("/api/v1/owner/stores/{storeId}/events", storeId)
+                        get("/api/v1/owner/coupons/events")
+                                .param("storeId", "1")
                                 .param("size", "10")
                                 .param("lastStartAt", page1.nextCursor().lastStartAt().toString())
                                 .param("lastEndAt", page1.nextCursor().lastEndAt().toString())
@@ -226,7 +228,7 @@ class CouponEventControllerTest {
                 .willReturn(responseDto);
 
         // when & then
-        mockMvc.perform(get("/api/v1/owner/stores/events/statistics")
+        mockMvc.perform(get("/api/v1/owner/coupons/events/statistics")
                         .param("lastStoreId", lastStoreId.toString())
                         .param("size", String.valueOf(size))
                 )

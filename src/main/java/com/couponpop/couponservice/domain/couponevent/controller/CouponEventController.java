@@ -27,7 +27,7 @@ public class CouponEventController {
 
     private final CouponEventService couponEventService;
 
-    @PostMapping("/owner/events")
+    @PostMapping("/owner/coupons/events")
     public ResponseEntity<ApiResponse<CreateCouponEventResponse>> createCouponEvent(
             @RequestBody @Valid CreateCouponEventRequest request,
             @CurrentMember AuthMember authMember // TODO : 인증 세션 구현되면 변경
@@ -37,16 +37,15 @@ public class CouponEventController {
         return ApiResponse.created(response);
     }
 
-    @GetMapping("/owner/events/{eventId}")
+    @GetMapping("/owner/coupons/events/{eventId}")
     public ResponseEntity<ApiResponse<CouponEventDetailResponse>> getCouponEvent(@PathVariable Long eventId, @CurrentMember AuthMember authMember) {
         CouponEventDetailResponse response = couponEventService.getCouponEvent(eventId, authMember.id());
         return ApiResponse.success(response);
     }
 
-    // TODO : 나중에 Store 도메인으로 옮기는 거 고려하기
-    @GetMapping("/owner/stores/{storeId}/events")
+    @GetMapping("/owner/coupons/events")
     public ResponseEntity<ApiResponse<StoreCouponEventListResponse>> getCouponEventsByStore(
-            @PathVariable Long storeId,
+            @RequestParam Long storeId,
             @RequestParam(defaultValue = "IN_PROGRESS", required = false) CouponEventStatus status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastStartAt,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime lastEndAt,
@@ -60,7 +59,7 @@ public class CouponEventController {
         return ApiResponse.success(response);
     }
 
-    @GetMapping("/owner/stores/events/statistics")
+    @GetMapping("/owner/coupons/events/statistics")
     public ResponseEntity<ApiResponse<StoreCouponEventStatisticsResponse>> getStoreCouponEventStatistics(
             @RequestParam(required = false) Long lastStoreId,
             @RequestParam(defaultValue = "10") int size,
