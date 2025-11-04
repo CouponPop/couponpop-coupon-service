@@ -15,7 +15,7 @@ COPY gradle gradle
 COPY build.gradle settings.gradle ./
 
 # Gradle 캐시 미리 받아두기
-RUN chmod +x ./gradlew && ./gradlew dependencies --no-daemon || return 0
+RUN chmod +x ./gradlew && ./gradlew dependencies --no-daemon || true
 
 # 소스 복사 및 빌드
 COPY src src
