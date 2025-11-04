@@ -43,3 +43,5 @@ conf/*.conf
 /scripts/jmeter
 
 docker.sh
+
+/src/main/java/com/couponpop/couponservice/common/config/AsyncConfig.java

@@ -40,17 +40,67 @@ configurations {
     }
 }
 
+// .env로부터 GITHUB_ACTOR와 GITHUB_TOKEN을 읽어오는 함수
+def loadGithubCredentials() {
+    def credentials = [:]
+    def envFile = file('.env')
+    def foundKeys = 0
+
+    if (envFile.exists()) {
+        envFile.eachLine { line ->
+            if (foundKeys == 2) return // 두 키 다 찾으면 조기 종료
+            if (!line.startsWith('#') && line.contains('=')) {
+                def (key, value) = line.split('=', 2)*.trim()
+                if (key in ['GITHUB_ACTOR', 'GITHUB_TOKEN']) {
+                    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                        value = value.substring(1, value.length() - 1)
+                    }
+                    credentials[key] = value
+                    foundKeys++ //
+                }
+            }
+        }
+    }
+
+    return credentials
+}
+
 repositories {
     mavenCentral()
+
+    def githubCredentials = loadGithubCredentials()
+    def githubUsername = githubCredentials.GITHUB_ACTOR ?: System.getenv("GITHUB_ACTOR") ?: "unknown"
+    def githubToken = githubCredentials.GITHUB_TOKEN ?: System.getenv("GITHUB_TOKEN") ?: "unknown"
+
+    maven {
+        url = uri("https://maven.pkg.github.com/CouponPop/couponpop-security-module")
+        credentials {
+            username = githubUsername
+            password = githubToken
+        }
+    }
+
+    maven {
+        url = uri("https://maven.pkg.github.com/CouponPop/couponpop-core-module")
+        credentials {
+            username = githubUsername
+            password = githubToken
+        }
+    }
 }
 
 dependencies {
+    // [CouponPop Module]
+    implementation 'com.couponpop:couponpop-security:0.0.1-SNAPSHOT'
+    implementation 'com.couponpop:couponpop-core:0.0.2-SNAPSHOT'
+
     // [Spring Boot Starter]
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // [DB]
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -88,6 +138,7 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:mysql'
 
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
