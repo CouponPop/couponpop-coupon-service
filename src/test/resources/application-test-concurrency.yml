@@ -18,6 +18,25 @@ spring:
 jwt:
   secret:
     key: Y291cG9ucG9wLXRlc3QtanVuaW9yLWJhY2tlbmQtZGV2ZWxvcGVyLXNlY3JldC1rZXktZm9yLWNpLWNkCg==
+    white-list:
+      - /api/v1/auth/signup
+      - /api/v1/auth/login
+      - /actuator/health
+      - /error
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /v3/api-docs/**
+      - /v3/api-docs.yaml
+      - /v3/api-docs.json
+      - /api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+      - /docs/**
+
+client:
+  store-service:
+    name: store-client
+    url: http://localhost:8082/internal
 
 logging:
   level:
