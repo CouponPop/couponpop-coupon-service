@@ -41,3 +41,5 @@ out/
 conf/*.conf
 
 /scripts/jmeter
+
+docker.sh
