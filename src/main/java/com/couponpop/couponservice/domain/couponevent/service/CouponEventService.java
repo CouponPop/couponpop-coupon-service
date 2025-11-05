@@ -17,6 +17,7 @@ import com.couponpop.couponservice.domain.couponevent.enums.CouponEventStatus;
 import com.couponpop.couponservice.domain.couponevent.exception.CouponEventErrorCode;
 import com.couponpop.couponservice.domain.couponevent.repository.CouponEventRepository;
 import com.couponpop.couponservice.domain.couponevent.repository.dto.StoreCouponEventStatisticsProjection;
+import com.couponpop.couponservice.domain.store.exception.StoreErrorCode;
 import com.couponpop.couponservice.domain.store.service.StoreInternalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class CouponEventService {
         // store 소유 여부 검증
         StoreOwnershipResponse storeOwnership = storeInternalService.checkOwnership(request.storeId(), memberId);
         if (!storeOwnership.isOwner()) {
-            throw new IllegalArgumentException("해당 매장은 로그인한 회원 소유가 아닙니다.");
+            throw new GlobalException(StoreErrorCode.STORE_ACCESS_PERMISSION_DENIED);
         }
 
         // 이벤트 기간 검증
