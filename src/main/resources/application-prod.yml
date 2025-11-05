@@ -1,4 +1,9 @@
+server:
+  port: 8080
+
 spring:
+  application:
+    name: coupon-service
   jpa:
     hibernate:
       ddl-auto: none
@@ -6,6 +11,8 @@ spring:
       hibernate:
         show_sql: false
         highlight_sql: false
+  config: # AWS Parameter Store에서 설정을 가져오도록 Spring Cloud AWS Config 설정
+    import: optional:aws-parameterstore:/couponpop/prod/coupon-service/
 
 fcm:
   firebase-config-path: file:/app/config/serviceAccountKey.json
@@ -16,3 +23,21 @@ logging:
     org.springframework: INFO
     org.hibernate.SQL: WARN
     org.hibernate.orm.jdbc.bind: WARN
+
+client:
+  store-service:
+    name: store-client
+    url: http://store.couponpop.internal:8080
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
