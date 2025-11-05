@@ -18,5 +18,6 @@ public interface CouponEventQueryRepository {
             int limit
     );
 
+    // TODO : 이벤트가 진행 중이지 않은 매장에 대한 대시보드도 보여줘야 하나? 현재는 이벤트 진행 중인 매장만 보임
     List<StoreCouponEventStatisticsProjection> fetchStoreCouponEventStatistics(List<Long> storeIds);
 }

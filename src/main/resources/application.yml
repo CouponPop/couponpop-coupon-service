@@ -6,3 +6,8 @@ spring:
     name: coupon-service
   profiles:
     active: local
+
+logging:
+  level:
+    com.couponpop.couponservice.domain.store.client: DEBUG
+    feign: DEBUG
