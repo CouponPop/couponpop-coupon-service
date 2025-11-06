@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "${client.store-service.name}", url = "${client.store-service.url}")
+@FeignClient(name = "${client.store-service.name}", url = "${client.store-service.url}/internal")
 public interface StoreClient {
 
     @GetMapping("/v1/stores/ownership")

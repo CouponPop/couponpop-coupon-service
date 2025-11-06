@@ -10,4 +10,4 @@ spring:
 logging:
   level:
     com.couponpop.couponservice.domain.store.client: DEBUG
-    feign: DEBUG
+    com.couponpop.couponservice.domain.couponevent: DEBUG

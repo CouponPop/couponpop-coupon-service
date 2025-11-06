@@ -54,4 +54,4 @@ springdoc:
 client:
   store-service:
     name: store-client
-    url: http://localhost:8082/internal
+    url: http://localhost:8082

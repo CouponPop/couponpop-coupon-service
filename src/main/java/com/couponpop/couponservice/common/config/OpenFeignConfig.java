@@ -1,5 +1,6 @@
 package com.couponpop.couponservice.common.config;
 
+import feign.Logger;
 import feign.RequestInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -29,6 +30,11 @@ public class OpenFeignConfig {
             }
         };
 
+    }
+
+    @Bean
+    Logger.Level feignLoggerLevel() {
+        return Logger.Level.FULL;
     }
 
 }
