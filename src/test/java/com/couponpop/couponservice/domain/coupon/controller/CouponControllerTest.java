@@ -265,7 +265,7 @@ class CouponControllerTest {
                     .andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.data.id").value(1L))
-                    .andExpect(jsonPath("$.data.status").value("AVAILABLE"))
+                    .andExpect(jsonPath("$.data.status").value(CouponStatus.ISSUED.name()))
                     .andExpect(jsonPath("$.data.event.id").value(1L))
                     .andExpect(jsonPath("$.data.store.id").value(100L));
         }
@@ -356,7 +356,8 @@ class CouponControllerTest {
         void useCoupon_fail_missingQrCode() throws Exception {
             String requestBody = """
                     {
-                        "couponId": 1
+                        "couponId": 1,
+                        "storeId" : 1
                     }
                     """;
 
@@ -375,7 +376,8 @@ class CouponControllerTest {
         void useCoupon_fail_missingCouponId() throws Exception {
             String requestBody = """
                     {
-                        "qrCode": "foejsnvp"
+                        "qrCode": "foejsnvp",
+                        "storeId" : 1
                     }
                     """;
 
@@ -415,7 +417,7 @@ class CouponControllerTest {
             // when & then
             mockMvc.perform(
                             get("/api/v1/coupons")
-                                    .param("type", "AVAILABLE")
+                                    .param("type", CouponStatus.ISSUED.name())
                                     .param("size", "2")
                                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -441,7 +443,7 @@ class CouponControllerTest {
             // when & then
             mockMvc.perform(
                             get("/api/v1/coupons")
-                                    .param("type", "AVAILABLE")
+                                    .param("type", CouponStatus.ISSUED.name())
                                     .param("lastEventEndAt", now.minusDays(1).toString())
                                     .param("lastCouponId", "2")
                                     .param("size", "2")

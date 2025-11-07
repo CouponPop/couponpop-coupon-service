@@ -7,11 +7,13 @@ import com.couponpop.couponservice.domain.couponevent.repository.CouponEventRepo
 import com.couponpop.couponservice.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
@@ -20,10 +22,18 @@ import java.util.Map;
 
 @Import(RedisTestContainersConfig.class)
 @ActiveProfiles("test-concurrency")
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.rabbitmq.host=localhost",
+        "spring.rabbitmq.port=5672",
+        "spring.rabbitmq.username=guest",
+        "spring.rabbitmq.password=guest"
+})
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public abstract class CouponIssueConcurrencyTestSupport {
+
+    @MockitoBean
+    private RabbitTemplate rabbitTemplate; // 실제 RabbitMQ 호출 차단
 
     @Autowired
     protected CouponEventRepository couponEventRepository;
