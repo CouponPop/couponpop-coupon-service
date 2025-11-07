@@ -73,7 +73,7 @@ public class CouponService {
         // TODO : 쿠폰 만료 여부 표시를 날짜로 할지 일관 처리 할지
         // 임시 코드 발급 + Redis 저장 (TTL 10분)
         Optional<String> tempCode = Optional.empty();
-        if (coupon.isAvailable()) {
+        if (coupon.isIssued()) {
             String code = UUID.randomUUID().toString();
             temporaryCouponCodeRepository.setTemporaryCoupon(couponId, code, coupon.getCouponCode(), TEMP_CODE_TTL_SECONDS);
             tempCode = Optional.of(code);
