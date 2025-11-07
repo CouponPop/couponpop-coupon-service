@@ -31,7 +31,7 @@ COLUMN expire_at;
 -- 컬럼 추가
 ALTER TABLE coupon_histories
     ADD COLUMN coupon_id BIGINT NOT NULL COMMENT '쿠폰 ID',
-    ADD COLUMN coupon_status ENUM ('ISSUED', 'USED', 'EXPIRED','CANCELED') NOT NULL COMMENT '쿠폰 상태';
+    ADD COLUMN coupon_status ENUM ('ISSUED', 'USED', 'CANCELED') NOT NULL COMMENT '쿠폰 상태';
 
 -- 테이블 설명 변경
 ALTER TABLE coupon_histories
