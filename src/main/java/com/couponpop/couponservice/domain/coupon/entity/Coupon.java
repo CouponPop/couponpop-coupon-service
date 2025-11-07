@@ -69,7 +69,7 @@ public class Coupon extends BaseEntity {
                 .couponCode(couponCode)
                 .receivedAt(issuedTime)
                 .expireAt(couponEvent.getEventEndAt())
-                .couponStatus(CouponStatus.AVAILABLE)
+                .couponStatus(CouponStatus.ISSUED)
                 .couponEvent(couponEvent)
                 .memberId(memberId)
                 .storeId(storeId)
@@ -81,8 +81,8 @@ public class Coupon extends BaseEntity {
         return "CPN-" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
     }
 
-    public boolean isAvailable() {
-        return CouponStatus.AVAILABLE.equals(this.couponStatus);
+    public boolean isIssued() {
+        return CouponStatus.ISSUED.equals(this.couponStatus);
     }
 
     // 쿠폰이 만료되었는지
@@ -100,7 +100,7 @@ public class Coupon extends BaseEntity {
             throw new GlobalException(CouponErrorCode.COUPON_ALREADY_USED);
         }
         // 쿠폰 사용 가능 상태 검증 - AVAILABLE 이 아닌 USED, EXPIRED, CANCELED 이면 사용 못하는 쿠폰
-        if (!isAvailable()) {
+        if (!isIssued()) {
             throw new GlobalException(CouponErrorCode.COUPON_NOT_AVAILABLE);
         }
         // 만료 시간 검증

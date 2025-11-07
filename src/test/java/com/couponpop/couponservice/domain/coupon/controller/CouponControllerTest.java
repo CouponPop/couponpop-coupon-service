@@ -239,7 +239,7 @@ class CouponControllerTest {
             // CouponDetailResponse 생성
             return new CouponDetailResponse(
                     couponId,
-                    CouponStatus.AVAILABLE,
+                    CouponStatus.ISSUED,
                     LocalDateTime.of(2025, 10, 21, 12, 0),
                     LocalDateTime.of(2025, 11, 21, 23, 59),
                     null,
@@ -311,7 +311,7 @@ class CouponControllerTest {
         @DisplayName("쿠폰 사용 성공 - 204 No Content")
         void useCoupon_Success() throws Exception {
             // given
-            UseCouponRequest request = new UseCouponRequest("TEMP123", 1L);
+            UseCouponRequest request = new UseCouponRequest("TEMP123", 1L, 1L);
 
 
             // when
@@ -325,21 +325,21 @@ class CouponControllerTest {
 
             // then
             verify(couponService, times(1))
-                    .useCoupon(anyLong(), anyString(), anyLong(), any(LocalDateTime.class));
+                    .useCoupon(anyLong(), anyLong(), anyString(), anyLong(), any(LocalDateTime.class));
         }
 
         @Test
         @DisplayName("쿠폰 사용 요청 실패 - 임시 코드 유효하지 않음")
         void useCoupon_InvalidTempCode() throws Exception {
             // given
-            UseCouponRequest request = new UseCouponRequest("INVALID", 1L);
+            UseCouponRequest request = new UseCouponRequest("INVALID", 1L, 1L);
 
             Mockito.doThrow(new GlobalException(CouponErrorCode.COUPON_INVALID_TEMP_CODE))
-                    .when(couponService).useCoupon(Mockito.anyLong(), Mockito.anyString(), Mockito.anyLong(), Mockito.any(LocalDateTime.class));
+                    .when(couponService).useCoupon(anyLong(), Mockito.anyLong(), Mockito.anyString(), Mockito.anyLong(), Mockito.any(LocalDateTime.class));
 
             willThrow(new GlobalException(CouponErrorCode.COUPON_INVALID_TEMP_CODE))
                     .given(couponService)
-                    .useCoupon(anyLong(), anyString(), anyLong(), any(LocalDateTime.class));
+                    .useCoupon(anyLong(), anyLong(), anyString(), anyLong(), any(LocalDateTime.class));
 
             // when & then
             mockMvc.perform(
@@ -403,13 +403,13 @@ class CouponControllerTest {
             EventInfoResponse eventInfoResponse = new EventInfoResponse(1L, "이벤트1", new EventPeriodResponse(now.minusDays(2), now.plusDays(1)));
             StoreInfoResponse storeInfoResponse = new StoreInfoResponse(1L, "매장", StoreCategory.CAFE, 3.14, 3.14, "imageUrl");
             List<CouponDetailResponse> responses = List.of(
-                    new CouponDetailResponse(1L, CouponStatus.AVAILABLE, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse),
-                    new CouponDetailResponse(2L, CouponStatus.AVAILABLE, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse),
-                    new CouponDetailResponse(3L, CouponStatus.AVAILABLE, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse)
+                    new CouponDetailResponse(1L, CouponStatus.ISSUED, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse),
+                    new CouponDetailResponse(2L, CouponStatus.ISSUED, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse),
+                    new CouponDetailResponse(3L, CouponStatus.ISSUED, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse)
             );
             IssuedCouponListResponse mockResponse = IssuedCouponListResponse.of(responses, 2);
 
-            given(couponService.getIssuedCoupons(anyLong(), eq(CouponStatus.AVAILABLE), any(MemberIssuedCouponCursor.class), eq(2)))
+            given(couponService.getIssuedCoupons(anyLong(), eq(CouponStatus.ISSUED), any(MemberIssuedCouponCursor.class), eq(2)))
                     .willReturn(mockResponse);
 
             // when & then
@@ -431,11 +431,11 @@ class CouponControllerTest {
             EventInfoResponse eventInfoResponse = new EventInfoResponse(1L, "이벤트1", new EventPeriodResponse(now.minusDays(2), now.plusDays(1)));
             StoreInfoResponse storeInfoResponse = new StoreInfoResponse(1L, "매장", StoreCategory.CAFE, 3.14, 3.14, "imageUrl");
             List<CouponDetailResponse> responses = List.of(
-                    new CouponDetailResponse(3L, CouponStatus.AVAILABLE, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse)
+                    new CouponDetailResponse(3L, CouponStatus.ISSUED, now.minusDays(1), now.plusDays(1), null, null, eventInfoResponse, storeInfoResponse)
             );
             IssuedCouponListResponse mockResponse = IssuedCouponListResponse.of(responses, 2);
 
-            given(couponService.getIssuedCoupons(anyLong(), eq(CouponStatus.AVAILABLE), any(MemberIssuedCouponCursor.class), eq(2)))
+            given(couponService.getIssuedCoupons(anyLong(), eq(CouponStatus.ISSUED), any(MemberIssuedCouponCursor.class), eq(2)))
                     .willReturn(mockResponse);
 
             // when & then

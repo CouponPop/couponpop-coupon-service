@@ -33,6 +33,12 @@ public class TemporaryCouponCodeRepository {
         redisTemplate.delete(key);
     }
 
+    public boolean validateAndDeleteTemporaryCoupon(Long couponId, String tempCode) {
+        String key = generateTempCouponKey(couponId, tempCode);
+        String value = (String) redisTemplate.opsForValue().getAndDelete(key); // 원자적 조회+삭제
+        return value != null;
+    }
+
     private static String generateTempCouponKey(Long couponId, String tempCode) {
         return TEMP_COUPON_PREFIX + couponId + DELIMITER + tempCode;
     }
