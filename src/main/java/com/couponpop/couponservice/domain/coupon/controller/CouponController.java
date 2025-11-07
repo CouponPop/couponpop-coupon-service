@@ -43,7 +43,7 @@ public class CouponController {
     @PostMapping("/coupons/use")
     public ResponseEntity<ApiResponse<Void>> useCoupon(@Valid @RequestBody UseCouponRequest request, @CurrentMember AuthMember authMember) {
         LocalDateTime usedAt = LocalDateTime.now();
-        couponService.useCoupon(request.couponId(), request.qrCode(), authMember.id(), usedAt);
+        couponService.useCoupon(request.storeId(), request.couponId(), request.qrCode(), authMember.id(), usedAt);
         return ApiResponse.noContent();
     }
 
