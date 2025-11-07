@@ -108,6 +108,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // [RabbitMQ]
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
     // [Spring Cloud Starter]
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
