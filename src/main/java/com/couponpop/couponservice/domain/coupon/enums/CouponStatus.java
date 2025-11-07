@@ -1,6 +1,18 @@
 package com.couponpop.couponservice.domain.coupon.enums;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public enum CouponStatus {
 
-    AVAILABLE, USED, EXPIRED, CANCELED
+    ISSUED("issued"),
+    USED("used"),
+    EXPIRED("expired"),
+    CANCELED("canceled");
+
+    private final String routingKey;
+
+    public String asRoutingKey() {
+        return routingKey;
+    }
 }

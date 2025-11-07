@@ -8,11 +8,12 @@ import com.couponpop.couponservice.domain.coupon.dto.response.CouponDetailRespon
 import com.couponpop.couponservice.domain.coupon.dto.response.IssuedCouponListResponse;
 import com.couponpop.couponservice.domain.coupon.entity.Coupon;
 import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
-import com.couponpop.couponservice.domain.coupon.event.CouponUsedEvent;
+import com.couponpop.couponservice.domain.coupon.event.model.CouponUsedEvent;
 import com.couponpop.couponservice.domain.coupon.exception.CouponErrorCode;
 import com.couponpop.couponservice.domain.coupon.repository.db.CouponRepository;
 import com.couponpop.couponservice.domain.coupon.repository.db.dto.CouponSummaryInfoProjection;
 import com.couponpop.couponservice.domain.coupon.repository.redis.TemporaryCouponCodeRepository;
+import com.couponpop.couponservice.domain.store.exception.StoreErrorCode;
 import com.couponpop.couponservice.domain.store.service.StoreInternalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,7 @@ public class CouponService {
         // TODO : 쿠폰 만료 여부 표시를 날짜로 할지 일관 처리 할지
         // 임시 코드 발급 + Redis 저장 (TTL 10분)
         Optional<String> tempCode = Optional.empty();
-        if (coupon.isAvailable()) {
+        if (coupon.isIssued()) {
             String code = UUID.randomUUID().toString();
             temporaryCouponCodeRepository.setTemporaryCoupon(couponId, code, coupon.getCouponCode(), TEMP_CODE_TTL_SECONDS);
             tempCode = Optional.of(code);
@@ -108,15 +109,10 @@ public class CouponService {
      */
     // TODO : 도메인 로직의 핵심성과 비핵심성을 분리
     @Transactional
-    public void useCoupon(Long couponId, String qrCode, Long memberId, LocalDateTime usedAt) {
+    public void useCoupon(Long storeId, Long couponId, String qrCode, Long memberId, LocalDateTime usedAt) {
 
-        /**
-         * TODO: Redis에서 임시 코드 원자적 검증 + 조회
-         * - 현재는 validateTemporaryCoupon 후 delete 순서
-         * - getAndDelete 또는 Lua 스크립트로 동시성 안전하게 처리
-         */
         //  Redis 임시 코드 검증
-        if (!temporaryCouponCodeRepository.validateTemporaryCoupon(couponId, qrCode)) {
+        if (!temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(couponId, qrCode)) {
             throw new GlobalException(CouponErrorCode.COUPON_INVALID_TEMP_CODE);
         }
 
@@ -130,6 +126,10 @@ public class CouponService {
         Coupon coupon = couponRepository.findByIdWithCouponEvent(couponId)
                 .orElseThrow(() -> new GlobalException(CouponErrorCode.COUPON_NOT_FOUND));
 
+        // 매장 검증 - 사용하려는 매장이 쿠폰이 발급된 매장이 아니면 Error
+        if (!coupon.getStoreId().equals(storeId)) {
+            throw new GlobalException(StoreErrorCode.STORE_NOT_MATCHED_WITH_COUPON);
+        }
         // 쿠폰 소유자 검증
         if (!coupon.getMemberId().equals(memberId)) {
             throw new GlobalException(CouponErrorCode.COUPON_ACCESS_DENIED);
@@ -140,9 +140,6 @@ public class CouponService {
 
         // 쿠폰 사용
         coupon.use(usedAt);
-
-        // Redis 임시 코드 삭제
-        temporaryCouponCodeRepository.deleteTemporaryCoupon(couponId, qrCode);
 
         eventPublisher.publishEvent(CouponUsedEvent.of(
                 couponId,

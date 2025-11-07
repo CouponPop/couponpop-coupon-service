@@ -8,7 +8,7 @@ import com.couponpop.couponservice.domain.coupon.dto.response.CouponDetailRespon
 import com.couponpop.couponservice.domain.coupon.dto.response.IssuedCouponListResponse;
 import com.couponpop.couponservice.domain.coupon.entity.Coupon;
 import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
-import com.couponpop.couponservice.domain.coupon.event.CouponUsedEvent;
+import com.couponpop.couponservice.domain.coupon.event.model.CouponUsedEvent;
 import com.couponpop.couponservice.domain.coupon.exception.CouponErrorCode;
 import com.couponpop.couponservice.domain.coupon.repository.db.CouponRepository;
 import com.couponpop.couponservice.domain.coupon.repository.db.dto.CouponSummaryInfoProjection;
@@ -96,7 +96,7 @@ class CouponServiceTest {
                 "couponCode", "CPN-9515BD7FE9CD",
                 "receivedAt", couponIssuedAt,
                 "expireAt", eventEndAt,
-                "couponStatus", CouponStatus.AVAILABLE,
+                "couponStatus", CouponStatus.ISSUED,
                 "couponEvent", couponEvent,
                 "memberId", customerId,
                 "storeId", storeId
@@ -239,7 +239,7 @@ class CouponServiceTest {
 
             // then
             assertThat(response).isNotNull();
-            assertThat(response.status()).isEqualTo(CouponStatus.AVAILABLE);
+            assertThat(response.status()).isEqualTo(CouponStatus.ISSUED);
             assertThat(response)
                     .extracting("id", "issuedAt", "expireAt")
                     .containsExactly(1L, couponIssuedAt, eventEndAt);
@@ -319,21 +319,19 @@ class CouponServiceTest {
         @DisplayName("쿠폰 사용 - 성공")
         void useCoupon_Success() {
             // given
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(true);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByIdWithCouponEvent(anyLong())).willReturn(Optional.of(coupon));
 
             LocalDateTime usedAt = eventStartAt.plusHours(10);
             String qrCode = "QR123";
 
             // when
-            couponService.useCoupon(coupon.getId(), qrCode, customerId, usedAt);
+            couponService.useCoupon(storeId, coupon.getId(), qrCode, customerId, usedAt);
 
             // then
             assertThat(coupon.getCouponStatus()).isEqualTo(CouponStatus.USED);
             assertThat(coupon.getUsedAt()).isEqualTo(usedAt);
 
-            verify(temporaryCouponCodeRepository, times(1))
-                    .deleteTemporaryCoupon(anyLong(), anyString());
             verify(eventPublisher, times(1))
                     .publishEvent(any(CouponUsedEvent.class));
         }
@@ -342,13 +340,13 @@ class CouponServiceTest {
         @DisplayName("쿠폰 사용 실패 - 임시 코드 없을 때 예외치")
         void useCoupon_InvalidQRCode() {
             // given
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(false);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(false);
 
             LocalDateTime usedAt = eventStartAt.plusHours(10);
             String qrCode = "QR123";
 
             // when & then
-            assertThatThrownBy(() -> couponService.useCoupon(coupon.getId(), qrCode, customerId, usedAt))
+            assertThatThrownBy(() -> couponService.useCoupon(storeId, coupon.getId(), qrCode, customerId, usedAt))
                     .isInstanceOf(GlobalException.class)
                     .hasMessage(CouponErrorCode.COUPON_INVALID_TEMP_CODE.getMessage());
         }
@@ -357,14 +355,14 @@ class CouponServiceTest {
         @DisplayName("쿠폰 사용 실패 - 이벤트 시작 전")
         void useCoupon_EventNotStarted() {
             // given
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(true);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByIdWithCouponEvent(anyLong())).willReturn(Optional.of(coupon));
 
             LocalDateTime usedAt = eventStartAt.minusMinutes(1);
             String qrCode = "QR123";
 
             // when & then
-            assertThatThrownBy(() -> couponService.useCoupon(coupon.getId(), qrCode, customerId, usedAt))
+            assertThatThrownBy(() -> couponService.useCoupon(storeId, coupon.getId(), qrCode, customerId, usedAt))
                     .isInstanceOf(GlobalException.class)
                     .hasMessage(CouponEventErrorCode.EVENT_NOT_STARTED.getMessage());
         }
@@ -373,14 +371,14 @@ class CouponServiceTest {
         @DisplayName("쿠폰 사용 실패 - 이벤트 종료 후")
         void useCoupon_EventEnded() {
             // given
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(true);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByIdWithCouponEvent(anyLong())).willReturn(Optional.of(coupon));
 
             LocalDateTime usedAt = eventEndAt.plusMinutes(1);
             String qrCode = "QR123";
 
             // when & then
-            assertThatThrownBy(() -> couponService.useCoupon(coupon.getId(), qrCode, customerId, usedAt))
+            assertThatThrownBy(() -> couponService.useCoupon(storeId, coupon.getId(), qrCode, customerId, usedAt))
                     .isInstanceOf(GlobalException.class)
                     .hasMessage(CouponEventErrorCode.EVENT_ENDED.getMessage());
         }
@@ -389,14 +387,14 @@ class CouponServiceTest {
         @DisplayName("쿠폰 사용 실패 - 쿠폰 소유자 불일치")
         void useCoupon_AccessDenied() {
             // given
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(true);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByIdWithCouponEvent(anyLong())).willReturn(Optional.of(coupon));
 
             LocalDateTime usedAt = eventStartAt.plusHours(10);
             String qrCode = "QR123";
 
             // when & then
-            assertThatThrownBy(() -> couponService.useCoupon(coupon.getId(), qrCode, 999L, usedAt))
+            assertThatThrownBy(() -> couponService.useCoupon(storeId, coupon.getId(), qrCode, 999L, usedAt))
                     .isInstanceOf(GlobalException.class)
                     .hasMessage(CouponErrorCode.COUPON_ACCESS_DENIED.getMessage());
         }
@@ -414,14 +412,15 @@ class CouponServiceTest {
                     "usedAt", usedAt,
                     "couponStatus", CouponStatus.USED,
                     "couponEvent", couponEvent,
-                    "memberId", customerId
+                    "memberId", customerId,
+                    "storeId", storeId
             ));
 
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(true);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByIdWithCouponEvent(anyLong())).willReturn(Optional.of(coupon));
 
             // when & then
-            assertThatThrownBy(() -> couponService.useCoupon(coupon.getId(), "QR123", customerId, usedAt))
+            assertThatThrownBy(() -> couponService.useCoupon(storeId, coupon.getId(), "QR123", customerId, usedAt))
                     .isInstanceOf(GlobalException.class)
                     .hasMessage(CouponErrorCode.COUPON_ALREADY_USED.getMessage());
         }
@@ -438,14 +437,15 @@ class CouponServiceTest {
                     "expireAt", eventEndAt,
                     "couponStatus", CouponStatus.USED,
                     "couponEvent", couponEvent,
-                    "memberId", customerId
+                    "memberId", customerId,
+                    "storeId", storeId
             ));
 
-            given(temporaryCouponCodeRepository.validateTemporaryCoupon(anyLong(), anyString())).willReturn(true);
+            given(temporaryCouponCodeRepository.validateAndDeleteTemporaryCoupon(anyLong(), anyString())).willReturn(true);
             given(couponRepository.findByIdWithCouponEvent(anyLong())).willReturn(Optional.of(coupon));
 
             // when & then
-            assertThatThrownBy(() -> couponService.useCoupon(coupon.getId(), "QR123", customerId, usedAt))
+            assertThatThrownBy(() -> couponService.useCoupon(storeId, coupon.getId(), "QR123", customerId, usedAt))
                     .isInstanceOf(GlobalException.class)
                     .hasMessage(CouponErrorCode.COUPON_NOT_AVAILABLE.getMessage());
         }
@@ -459,7 +459,7 @@ class CouponServiceTest {
         private CouponSummaryInfoProjection createMockCoupon(Long id, LocalDateTime eventEndAt, Long storeId) {
             return new CouponSummaryInfoProjection(
                     id,
-                    CouponStatus.AVAILABLE,
+                    CouponStatus.ISSUED,
                     now.minusDays(1),
                     now.plusDays(5),
                     null,
@@ -495,7 +495,7 @@ class CouponServiceTest {
 
             // when
             IssuedCouponListResponse response = couponService.getIssuedCoupons(
-                    customerId, CouponStatus.AVAILABLE, cursor, pageSize
+                    customerId, CouponStatus.ISSUED, cursor, pageSize
             );
 
             // then
@@ -532,7 +532,7 @@ class CouponServiceTest {
 
             // when
             IssuedCouponListResponse response = couponService.getIssuedCoupons(
-                    customerId, CouponStatus.AVAILABLE, cursor, pageSize
+                    customerId, CouponStatus.ISSUED, cursor, pageSize
             );
 
             // then
@@ -565,7 +565,7 @@ class CouponServiceTest {
 
             // when
             IssuedCouponListResponse response = couponService.getIssuedCoupons(
-                    customerId, CouponStatus.AVAILABLE, lastCursor, pageSize
+                    customerId, CouponStatus.ISSUED, lastCursor, pageSize
             );
 
             // then
