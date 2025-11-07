@@ -145,7 +145,8 @@ public class CouponService {
                 couponId,
                 memberId,
                 coupon.getStoreId(),
-                coupon.getCouponEvent().getId()
+                coupon.getCouponEvent().getId(),
+                coupon.getCouponEvent().getName()
         ));
     }
 

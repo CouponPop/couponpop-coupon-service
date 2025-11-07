@@ -1,4 +1,4 @@
-package com.couponpop.couponservice.domain.coupon.event;
+package com.couponpop.couponservice.domain.coupon.event.model;
 
 
 import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
@@ -9,11 +9,12 @@ public record CouponUsedEvent(
         Long memberId,
         Long storeId,
         Long eventId,
+        String eventName,
         CouponStatus couponStatus
 ) {
 
-    public static CouponUsedEvent of(Long couponId, Long memberId, Long storeId, Long eventId) {
-        return new CouponUsedEvent(couponId, memberId, storeId, eventId, CouponStatus.USED);
+    public static CouponUsedEvent of(Long couponId, Long memberId, Long storeId, Long eventId, String eventName) {
+        return new CouponUsedEvent(couponId, memberId, storeId, eventId, eventName, CouponStatus.USED);
     }
 
     public CouponUsedDto toCouponUsedDto() {
