@@ -7,7 +7,7 @@ ALTER TABLE coupon_histories
 
 -- 불필요한 컬럼 삭제
 ALTER TABLE coupon_histories
-DROP COLUMN total_count,
+    DROP COLUMN total_count,
     DROP COLUMN event_name,
     DROP COLUMN member_name,
     DROP COLUMN store_name,
