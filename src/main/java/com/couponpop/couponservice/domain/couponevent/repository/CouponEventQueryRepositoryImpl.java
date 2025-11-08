@@ -1,7 +1,7 @@
 package com.couponpop.couponservice.domain.couponevent.repository;
 
-import com.couponpop.couponservice.domain.coupon.entity.QCoupon;
-import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
+import com.couponpop.couponservice.domain.coupon.common.entity.QCoupon;
+import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import com.couponpop.couponservice.domain.couponevent.dto.cursor.StoreCouponEventsCursor;
 import com.couponpop.couponservice.domain.couponevent.entity.QCouponEvent;
 import com.couponpop.couponservice.domain.couponevent.enums.CouponEventStatus;

@@ -3,7 +3,7 @@ package com.couponpop.couponservice.domain.coupon.event.handler;
 import com.couponpop.couponpopcoremodule.dto.coupon.event.model.CouponUsedMessage;
 import com.couponpop.couponpopcoremodule.dto.store.response.StoreResponse;
 import com.couponpop.couponpopcoremodule.enums.coupon.CouponMessageType;
-import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
+import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import com.couponpop.couponservice.domain.coupon.event.CouponPublisher;
 import com.couponpop.couponservice.domain.coupon.event.model.CouponUsedEvent;
 import com.couponpop.couponservice.domain.couponhistory.service.CouponHistoryService;

@@ -1,7 +1,7 @@
 package com.couponpop.couponservice.domain.coupon.event;
 
 import com.couponpop.couponservice.common.constants.RabbitMqConstants;
-import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
+import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

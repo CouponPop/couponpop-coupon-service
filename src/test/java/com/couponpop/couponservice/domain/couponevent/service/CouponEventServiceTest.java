@@ -2,8 +2,8 @@ package com.couponpop.couponservice.domain.couponevent.service;
 
 import com.couponpop.couponpopcoremodule.dto.couponevent.response.StoreOwnershipResponse;
 import com.couponpop.couponservice.common.exception.GlobalException;
-import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
-import com.couponpop.couponservice.domain.coupon.repository.db.CouponRepository;
+import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
+import com.couponpop.couponservice.domain.coupon.common.repository.db.CouponRepository;
 import com.couponpop.couponservice.domain.couponevent.dto.cursor.StoreCouponEventsCursor;
 import com.couponpop.couponservice.domain.couponevent.dto.request.CreateCouponEventRequest;
 import com.couponpop.couponservice.domain.couponevent.dto.response.CouponEventDetailResponse;

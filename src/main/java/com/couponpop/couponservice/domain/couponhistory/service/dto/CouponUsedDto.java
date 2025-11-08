@@ -1,7 +1,7 @@
 package com.couponpop.couponservice.domain.couponhistory.service.dto;
 
 
-import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
+import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 
 public record CouponUsedDto(
         Long couponId,

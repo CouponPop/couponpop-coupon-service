@@ -1,6 +1,6 @@
 package com.couponpop.couponservice.domain.couponhistory.entity;
 
-import com.couponpop.couponservice.domain.coupon.enums.CouponStatus;
+import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
