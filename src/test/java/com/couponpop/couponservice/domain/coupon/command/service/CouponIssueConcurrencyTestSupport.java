@@ -2,8 +2,8 @@ package com.couponpop.couponservice.domain.coupon.command.service;
 
 import com.couponpop.couponservice.common.config.RedisTestContainersConfig;
 import com.couponpop.couponservice.domain.coupon.common.repository.db.CouponRepository;
-import com.couponpop.couponservice.domain.couponevent.entity.CouponEvent;
-import com.couponpop.couponservice.domain.couponevent.repository.CouponEventRepository;
+import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.repository.CouponEventRepository;
 import com.couponpop.couponservice.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

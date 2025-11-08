@@ -1,7 +1,7 @@
 package com.couponpop.couponservice.domain.coupon.command.service.coupon_issue;
 
 import com.couponpop.couponservice.domain.coupon.command.service.CouponIssueConcurrencyTestSupport;
-import com.couponpop.couponservice.domain.couponevent.entity.CouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,7 +4,7 @@ import com.couponpop.couponservice.common.entity.BaseEntity;
 import com.couponpop.couponservice.common.exception.GlobalException;
 import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import com.couponpop.couponservice.domain.coupon.common.exception.CouponErrorCode;
-import com.couponpop.couponservice.domain.couponevent.entity.CouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

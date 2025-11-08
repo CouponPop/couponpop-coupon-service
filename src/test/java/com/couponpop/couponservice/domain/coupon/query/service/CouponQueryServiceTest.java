@@ -12,9 +12,9 @@ import com.couponpop.couponservice.domain.coupon.common.repository.redis.Tempora
 import com.couponpop.couponservice.domain.coupon.query.controller.dto.request.MemberIssuedCouponCursor;
 import com.couponpop.couponservice.domain.coupon.query.controller.dto.response.CouponDetailResponse;
 import com.couponpop.couponservice.domain.coupon.query.controller.dto.response.IssuedCouponListResponse;
-import com.couponpop.couponservice.domain.couponevent.entity.CouponEvent;
-import com.couponpop.couponservice.domain.couponevent.enums.CouponEventStatus;
-import com.couponpop.couponservice.domain.couponevent.repository.CouponEventRepository;
+import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.enums.CouponEventStatus;
+import com.couponpop.couponservice.domain.couponevent.common.repository.CouponEventRepository;
 import com.couponpop.couponservice.domain.store.service.StoreInternalService;
 import com.couponpop.couponservice.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;

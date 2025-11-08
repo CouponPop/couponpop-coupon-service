@@ -7,10 +7,10 @@ import com.couponpop.couponservice.domain.coupon.common.exception.CouponErrorCod
 import com.couponpop.couponservice.domain.coupon.common.repository.db.CouponRepository;
 import com.couponpop.couponservice.domain.coupon.common.repository.redis.TemporaryCouponCodeRepository;
 import com.couponpop.couponservice.domain.coupon.event.model.CouponUsedEvent;
-import com.couponpop.couponservice.domain.couponevent.entity.CouponEvent;
-import com.couponpop.couponservice.domain.couponevent.enums.CouponEventStatus;
-import com.couponpop.couponservice.domain.couponevent.exception.CouponEventErrorCode;
-import com.couponpop.couponservice.domain.couponevent.repository.CouponEventRepository;
+import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.enums.CouponEventStatus;
+import com.couponpop.couponservice.domain.couponevent.common.exception.CouponEventErrorCode;
+import com.couponpop.couponservice.domain.couponevent.common.repository.CouponEventRepository;
 import com.couponpop.couponservice.domain.store.service.StoreInternalService;
 import com.couponpop.couponservice.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;

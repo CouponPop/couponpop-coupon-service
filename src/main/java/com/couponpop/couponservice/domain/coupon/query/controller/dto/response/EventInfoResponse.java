@@ -1,7 +1,7 @@
 package com.couponpop.couponservice.domain.coupon.query.controller.dto.response;
 
 import com.couponpop.couponservice.domain.coupon.common.repository.db.dto.CouponSummaryInfoProjection;
-import com.couponpop.couponservice.domain.couponevent.entity.CouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 
 public record EventInfoResponse(
         Long id,

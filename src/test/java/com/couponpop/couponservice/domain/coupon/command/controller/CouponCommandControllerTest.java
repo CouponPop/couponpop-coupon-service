@@ -6,7 +6,7 @@ import com.couponpop.couponservice.domain.coupon.common.exception.CouponErrorCod
 import com.couponpop.couponservice.domain.coupon.command.controller.dto.request.CouponIssueRequest;
 import com.couponpop.couponservice.domain.coupon.command.controller.dto.request.UseCouponRequest;
 import com.couponpop.couponservice.domain.coupon.command.service.coupon_issue.CouponIssueFacade;
-import com.couponpop.couponservice.domain.couponevent.exception.CouponEventErrorCode;
+import com.couponpop.couponservice.domain.couponevent.common.exception.CouponEventErrorCode;
 import com.couponpop.security.dto.AuthMember;
 import com.couponpop.security.token.JwtAuthFilter;
 import com.couponpop.security.token.JwtAuthenticationToken;

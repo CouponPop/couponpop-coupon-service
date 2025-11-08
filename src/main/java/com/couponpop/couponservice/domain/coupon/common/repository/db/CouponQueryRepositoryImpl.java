@@ -4,7 +4,7 @@ import com.couponpop.couponservice.domain.coupon.common.entity.QCoupon;
 import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import com.couponpop.couponservice.domain.coupon.common.repository.db.dto.CouponSummaryInfoProjection;
 import com.couponpop.couponservice.domain.coupon.common.repository.db.dto.QCouponSummaryInfoProjection;
-import com.couponpop.couponservice.domain.couponevent.entity.QCouponEvent;
+import com.couponpop.couponservice.domain.couponevent.common.entity.QCouponEvent;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
