@@ -1,6 +1,6 @@
 package com.couponpop.couponservice.common.config;
 
-import com.couponpop.couponservice.common.datasource.ReplicationType;
+import com.couponpop.couponpopcoremodule.enums.db.ReplicationType;
 import com.couponpop.couponservice.common.datasource.RoutingDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
