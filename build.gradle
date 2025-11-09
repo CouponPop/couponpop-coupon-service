@@ -108,6 +108,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // [Spring Retry]
+    implementation 'org.springframework.retry:spring-retry'
+
     // [RabbitMQ]
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
