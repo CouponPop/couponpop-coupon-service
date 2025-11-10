@@ -29,7 +29,10 @@ pipeline {
 
         JWT_SECRET_KEY_CREDENTIAL   = 'jwt-secret-key-for-test'
         DB_URL_KEY_CREDENTIAL       = 'db-url-for-test'
-        ELASTICSEARCH_URI_CREDENTIAL = 'elasticsearch-uri-for-test'
+        REDIS_HOST_CREDENTIAL       = 'redis-host-for-test'
+        REDIS_PORT_CREDENTIAL       = 'redis-port-for-test'
+        RABBITMQ_HOST_CREDENTIAL    = 'rabbitmq-host-for-test'
+        RABBITMQ_PORT_CREDENTIAL    = 'rabbitmq-port-for-test'
 
         SONAR_HOST_URL              = 'http://sonarqube:9000'
     }
@@ -77,9 +80,12 @@ pipeline {
                       steps {
                           withCredentials([
                               usernamePassword(credentialsId: env.GPR_CREDENTIALS_ID, usernameVariable: 'GITHUB_ACTOR', passwordVariable: 'GITHUB_TOKEN'),
+                              string(credentialsId: env.REDIS_HOST_CREDENTIAL, variable: 'REDIS_HOST'),
+                              string(credentialsId: env.REDIS_PORT_CREDENTIAL, variable: 'REDIS_PORT'),
+                              string(credentialsId: env.RABBITMQ_HOST_CREDENTIAL, variable: 'RABBITMQ_HOST'),
+                              string(credentialsId: env.RABBITMQ_PORT_CREDENTIAL, variable: 'RABBITMQ_PORT'),
                               string(credentialsId: env.JWT_SECRET_KEY_CREDENTIAL, variable: 'JWT_SECRET_KEY'),
-                              string(credentialsId: env.DB_URL_KEY_CREDENTIAL, variable: 'DB_URL'),
-                              string(credentialsId: env.ELASTICSEARCH_URI_CREDENTIAL, variable: 'ELASTICSEARCH_URI')
+                              string(credentialsId: env.DB_URL_KEY_CREDENTIAL, variable: 'DB_URL')
                           ]) {
                               sh 'chmod +x ./gradlew'
                               sh '''
@@ -89,12 +95,15 @@ pipeline {
                                   # 이 변수들은 Shell 환경에서만 사용 (System.getenv()가 읽음)
                                   SPRING_PROFILES_ACTIVE=test \
                                   TZ=Asia/Seoul \
+                                  REDIS_HOST=${REDIS_HOST} \
+                                  REDIS_PORT=${REDIS_PORT} \
+                                  RABBITMQ_HOST=${RABBITMQ_HOST} \
+                                  RABBITMQ_PORT=${RABBITMQ_PORT} \
                                   JWT_SECRET_KEY=${JWT_SECRET_KEY} \
                                   GITHUB_ACTOR=${GITHUB_ACTOR} \
                                   GITHUB_TOKEN=${GITHUB_TOKEN} \
                                   DB_MASTER_URL=${DB_URL} \
                                   DB_SLAVE_URL=${DB_URL} \
-                                  ELASTICSEARCH_URI=${ELASTICSEARCH_URI} \
                                   ./gradlew clean build --no-daemon -Dspring.profiles.active=test
 
                                   rm -f build/libs/*plain*.jar
