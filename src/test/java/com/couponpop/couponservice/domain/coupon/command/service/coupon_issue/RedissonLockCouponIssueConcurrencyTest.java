@@ -11,6 +11,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @Slf4j
 class RedissonLockCouponIssueConcurrencyTest extends CouponIssueConcurrencyTestSupport {
@@ -45,6 +48,9 @@ class RedissonLockCouponIssueConcurrencyTest extends CouponIssueConcurrencyTestS
 
         // then
         assertThat(event.getIssuedCount()).isEqualTo(100);
+
+        // 이벤트가 실제 발행되지 않았음을 검증
+        verify(eventPublisher, never()).publishEvent(any());
     }
 
 }
