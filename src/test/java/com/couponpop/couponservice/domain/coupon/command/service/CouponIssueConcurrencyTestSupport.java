@@ -38,13 +38,13 @@ import java.util.Map;
 public abstract class CouponIssueConcurrencyTestSupport {
 
     @MockitoBean
-    private ApplicationEventPublisher eventPublisher;
+    protected ApplicationEventPublisher eventPublisher;
 
     @MockitoBean
-    private CouponIssuedEventHandler couponIssuedEventHandler;
+    protected CouponIssuedEventHandler couponIssuedEventHandler;
 
     @MockitoBean
-    private RabbitTemplate rabbitTemplate; // 실제 RabbitMQ 호출 차단
+    protected RabbitTemplate rabbitTemplate; // 실제 RabbitMQ 호출 차단
 
     @Autowired
     protected CouponEventRepository couponEventRepository;
