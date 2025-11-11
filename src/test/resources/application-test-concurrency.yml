@@ -1,7 +1,13 @@
 spring:
   datasource:
-    url: jdbc:tc:mysql:8.0.36:///testdb
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver # Spring Boot 2.3 버전 이후부터 생략 가능
+    master:
+      hikari:
+        jdbc-url: jdbc:tc:mysql:8.0.36:///testdb
+        driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver # Spring Boot 2.3 버전 이후부터 생략 가능
+    slave:
+      hikari:
+        jdbc-url: jdbc:tc:mysql:8.0.36:///testdb
+        driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver # Spring Boot 2.3 버전 이후부터 생략 가능
   jpa:
     hibernate:
       ddl-auto: none
@@ -36,7 +42,10 @@ jwt:
 client:
   store-service:
     name: store-client
-    url: http://localhost:8082/internal
+    url: http://localhost:8082
+  notification-service:
+    name: notification-client
+    url: http://localhost:8084
 
 logging:
   level:
