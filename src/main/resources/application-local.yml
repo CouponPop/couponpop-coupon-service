@@ -85,6 +85,9 @@ client:
   store-service:
     name: store-client
     url: http://localhost:8082
+  notification-service:
+    name: notification-client
+    url: http://localhost:8084
 
 management:
   endpoints:

@@ -81,6 +81,9 @@ client:
   store-service:
     name: store-client
     url: http://store.couponpop.internal:8080
+  notification-service:
+    name: notification-client
+    url: http://notification.couponpop.internal:8080
 
 cloud:
   aws:
