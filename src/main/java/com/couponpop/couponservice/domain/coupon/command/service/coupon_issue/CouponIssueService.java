@@ -4,10 +4,12 @@ import com.couponpop.couponservice.common.exception.GlobalException;
 import com.couponpop.couponservice.domain.coupon.common.entity.Coupon;
 import com.couponpop.couponservice.domain.coupon.common.exception.CouponErrorCode;
 import com.couponpop.couponservice.domain.coupon.common.repository.db.CouponRepository;
+import com.couponpop.couponservice.domain.coupon.event.model.CouponIssuedEvent;
 import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 import com.couponpop.couponservice.domain.couponevent.common.exception.CouponEventErrorCode;
 import com.couponpop.couponservice.domain.couponevent.common.repository.CouponEventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,9 @@ public class CouponIssueService implements CouponIssueFacade {
     // ****** Coupon Domain ****** //
     private final CouponEventRepository couponEventRepository;
     private final CouponRepository couponRepository;
+
+    // ****** Event Publish ****** //
+    private final ApplicationEventPublisher eventPublisher;
 
     // TODO : 이벤트가 해당 매장에서 진행 중인지 검증해야 할까?
     /*
@@ -35,7 +40,17 @@ public class CouponIssueService implements CouponIssueFacade {
         // 이벤트 기간 검증
         CouponEvent event = validateEventPeriodAndTime(eventId, currentDateTime);
         // 쿠폰 발급 및 쿠폰 저장
-        saveCouponIssue(memberId, currentDateTime, event);
+        Coupon coupon = saveCouponIssue(memberId, currentDateTime, event);
+
+        eventPublisher.publishEvent(CouponIssuedEvent.of(
+                coupon.getId(),
+                memberId,
+                event.getStoreId(),
+                eventId,
+                event.getTotalCount(),
+                event.getIssuedCount(),
+                event.getName()
+        ));
     }
 
     public void validateCouponDuplication(Long memberId, Long eventId) {
@@ -52,9 +67,9 @@ public class CouponIssueService implements CouponIssueFacade {
         return event;
     }
 
-    public void saveCouponIssue(Long memberId, LocalDateTime currentDateTime, CouponEvent event) {
+    public Coupon saveCouponIssue(Long memberId, LocalDateTime currentDateTime, CouponEvent event) {
         event.issueCoupon();
         Coupon issuedCoupon = Coupon.createIssuedCoupon(memberId, event.getStoreId(), event, currentDateTime);
-        couponRepository.save(issuedCoupon);
+        return couponRepository.save(issuedCoupon);
     }
 }

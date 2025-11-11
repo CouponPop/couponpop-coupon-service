@@ -1,6 +1,6 @@
 package com.couponpop.couponservice.domain.couponhistory.service;
 
-import com.couponpop.couponservice.domain.couponhistory.service.dto.CouponUsedDto;
+import com.couponpop.couponservice.domain.couponhistory.service.dto.CouponHistoryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class CouponHistoryFallbackService {
 
     private final CouponHistoryService couponHistoryService;
 
-    public void saveToBackupStorage(CouponUsedDto dto, Exception e) {
+    public void saveToBackupStorage(CouponHistoryDto dto, Exception e) {
         try {
             // 예시 ①: 보상 테이블에 저장
             log.warn("""

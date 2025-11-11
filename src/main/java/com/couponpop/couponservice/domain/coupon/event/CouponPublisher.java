@@ -25,7 +25,7 @@ public class CouponPublisher {
             rabbitTemplate.convertAndSend(COUPON_EXCHANGE, routingKey, message);
             log.info("[쿠폰 이벤트 발행 성공] routingKey={}, message={}", routingKey, message);
         } catch (AmqpException e) {
-            log.error("쿠폰 사용 FCM 발송 요청 전송에 실패했습니다. message: {}", message, e);
+            log.error("쿠폰 FCM 발송 요청 전송에 실패했습니다. message: {}", message, e);
             throw e;
         }
     }
