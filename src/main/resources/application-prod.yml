@@ -13,8 +13,8 @@ spring:
       password: ${DB_PASSWORD}
       pool-name: Hikari-MASTER
       driver-class-name: com.mysql.cj.jdbc.Driver
-      maximum-pool-size: 20
-      minimum-idle: 10
+      maximum-pool-size: 5
+      minimum-idle: 2
       connection-timeout: 30000   # 30초
       max-lifetime: 1800000       # 30분
       leak-detection-threshold: 60000  # 누수 감지
@@ -25,8 +25,8 @@ spring:
       password: ${DB_PASSWORD}
       pool-name: Hikari-SLAVE
       driver-class-name: com.mysql.cj.jdbc.Driver
-      maximum-pool-size: 20
-      minimum-idle: 10
+      maximum-pool-size: 5
+      minimum-idle: 2
       connection-timeout: 30000   # 30초
       max-lifetime: 1800000       # 30분
       leak-detection-threshold: 60000  # 누수 감지
@@ -96,7 +96,7 @@ management:
   endpoints:
     web:
       exposure:
-       include: health, info, prometheus
+        include: health, info, prometheus
   endpoint:
     health:
       show-details: always
