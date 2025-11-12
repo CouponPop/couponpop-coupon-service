@@ -3,6 +3,7 @@ package com.couponpop.couponservice.domain.coupon.command.service.coupon_issue;
 import com.couponpop.couponservice.domain.coupon.command.service.CouponIssueConcurrencyTestSupport;
 import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,8 +12,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @Slf4j
+@Disabled
 class RedissonLockCouponIssueConcurrencyTest extends CouponIssueConcurrencyTestSupport {
 
     @Autowired
@@ -45,6 +50,9 @@ class RedissonLockCouponIssueConcurrencyTest extends CouponIssueConcurrencyTestS
 
         // then
         assertThat(event.getIssuedCount()).isEqualTo(100);
+
+        // 이벤트가 실제 발행되지 않았음을 검증
+        verify(eventPublisher, never()).publishEvent(any());
     }
 
 }

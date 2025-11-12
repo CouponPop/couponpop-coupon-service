@@ -4,20 +4,23 @@ package com.couponpop.couponservice.domain.coupon.event.model;
 import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import com.couponpop.couponservice.domain.couponhistory.service.dto.CouponHistoryDto;
 
-public record CouponUsedEvent(
+public record CouponIssuedEvent(
         Long couponId,
         Long memberId,
         Long storeId,
         Long eventId,
+        int totalCount,
+        int issuedCount,
         String eventName,
         CouponStatus couponStatus
 ) implements CouponEvent {
 
-    public static CouponUsedEvent of(Long couponId, Long memberId, Long storeId, Long eventId, String eventName) {
-        return new CouponUsedEvent(couponId, memberId, storeId, eventId, eventName, CouponStatus.USED);
+    public static CouponIssuedEvent of(Long couponId, Long memberId, Long storeId, Long eventId, int totalCount, int issuedCount, String eventName) {
+        return new CouponIssuedEvent(couponId, memberId, storeId, eventId, totalCount, issuedCount, eventName, CouponStatus.ISSUED);
     }
 
     public CouponHistoryDto toCouponUsedDto() {
         return new CouponHistoryDto(couponId, memberId, storeId, eventId, couponStatus);
     }
+
 }

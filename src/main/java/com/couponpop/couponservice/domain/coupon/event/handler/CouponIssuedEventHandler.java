@@ -1,12 +1,12 @@
 package com.couponpop.couponservice.domain.coupon.event.handler;
 
-import com.couponpop.couponpopcoremodule.dto.coupon.event.model.CouponUsedMessage;
+import com.couponpop.couponpopcoremodule.dto.coupon.event.model.CouponIssuedMessage;
 import com.couponpop.couponpopcoremodule.enums.coupon.CouponMessageType;
 import com.couponpop.couponpopcoremodule.utils.NotificationTraceIdGenerator;
 import com.couponpop.couponservice.domain.coupon.common.enums.CouponStatus;
 import com.couponpop.couponservice.domain.coupon.event.CouponPublisher;
-import com.couponpop.couponservice.domain.coupon.event.model.CouponUsedEvent;
-import com.couponpop.couponservice.domain.coupon.event.retry.CouponUsedRetryableProcessor;
+import com.couponpop.couponservice.domain.coupon.event.model.CouponIssuedEvent;
+import com.couponpop.couponservice.domain.coupon.event.retry.CouponIssuedRetryableProcessor;
 import com.couponpop.couponservice.domain.notification.service.NotificationInternalService;
 import com.couponpop.couponservice.domain.store.service.StoreInternalService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,45 +18,47 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Component
-public class CouponUsedEventHandler extends AbstractCouponEventHandler<CouponUsedEvent, CouponUsedMessage> {
+public class CouponIssuedEventHandler extends AbstractCouponEventHandler<CouponIssuedEvent, CouponIssuedMessage> {
 
-    private final CouponUsedRetryableProcessor retryableProcessor;
+    private final CouponIssuedRetryableProcessor retryableProcessor;
 
-    public CouponUsedEventHandler(StoreInternalService storeInternalService, NotificationInternalService notificationInternalService, CouponPublisher eventPublisher, CouponUsedRetryableProcessor retryableProcessor) {
+    public CouponIssuedEventHandler(StoreInternalService storeInternalService, NotificationInternalService notificationInternalService, CouponPublisher eventPublisher, CouponIssuedRetryableProcessor retryableProcessor) {
         super(storeInternalService, notificationInternalService, eventPublisher);
         this.retryableProcessor = retryableProcessor;
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleCouponUsedEvent(CouponUsedEvent event) {
+    public void handleCouponIssuedEvent(CouponIssuedEvent event) {
         handleEvent(event, event.memberId(), event.storeId(), () -> retryableProcessor.process(event));
     }
 
     @Override
     protected CouponStatus getCouponStatus() {
-        return CouponStatus.USED;
+        return CouponStatus.ISSUED;
     }
 
     @Override
-    protected CouponUsedMessage buildMessage(CouponUsedEvent event, String token, String storeName, LocalDateTime occurredAt) {
+    protected CouponIssuedMessage buildMessage(CouponIssuedEvent event, String token, String storeName, LocalDateTime occurredAt) {
         String traceId = NotificationTraceIdGenerator.generate(event.couponId(), event.memberId(), event.storeId(), event.eventId(), token);
-        return CouponUsedMessage.of(
+        return CouponIssuedMessage.of(
                 traceId,
                 token,
                 event.couponId(),
                 event.memberId(),
                 event.storeId(),
-                storeName,
                 event.eventId(),
+                storeName,
                 event.eventName(),
-                CouponMessageType.USED,
+                event.totalCount(),
+                event.issuedCount(),
+                CouponMessageType.ISSUED,
                 occurredAt
         );
     }
 
     @Override
     protected String getHandlerName() {
-        return "CouponUsedEventHandler";
+        return "CouponIssuedEventHandler";
     }
 
 }

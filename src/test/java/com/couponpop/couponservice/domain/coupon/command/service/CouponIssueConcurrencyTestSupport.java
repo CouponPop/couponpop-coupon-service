@@ -2,8 +2,12 @@ package com.couponpop.couponservice.domain.coupon.command.service;
 
 import com.couponpop.couponservice.common.config.RedisTestContainersConfig;
 import com.couponpop.couponservice.domain.coupon.common.repository.db.CouponRepository;
+import com.couponpop.couponservice.domain.coupon.event.CouponPublisher;
+import com.couponpop.couponservice.domain.coupon.event.handler.CouponIssuedEventHandler;
 import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 import com.couponpop.couponservice.domain.couponevent.common.repository.CouponEventRepository;
+import com.couponpop.couponservice.domain.notification.service.NotificationInternalService;
+import com.couponpop.couponservice.domain.store.service.StoreInternalService;
 import com.couponpop.couponservice.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +15,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -33,7 +38,13 @@ import java.util.Map;
 public abstract class CouponIssueConcurrencyTestSupport {
 
     @MockitoBean
-    private RabbitTemplate rabbitTemplate; // 실제 RabbitMQ 호출 차단
+    protected ApplicationEventPublisher eventPublisher;
+
+    @MockitoBean
+    protected CouponIssuedEventHandler couponIssuedEventHandler;
+
+    @MockitoBean
+    protected RabbitTemplate rabbitTemplate; // 실제 RabbitMQ 호출 차단
 
     @Autowired
     protected CouponEventRepository couponEventRepository;
