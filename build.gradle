@@ -41,6 +41,17 @@ def jacocoExcludes = [
 
         // --- Swagger 관련 ---
         '**/static/docs/**',
+
+        // --- common 패키지 ---
+        '**/common/config/**',
+        '**/common/datasource/**',
+        '**/common/entity/**',
+        '**/common/exception/**',
+        '**/common/response/**',
+        '**/common/utils/**',
+
+        // --- coupon 도메인 관련 ---
+        '**/domain/**/**/**/dto/**',
 ]
 
 ext {
