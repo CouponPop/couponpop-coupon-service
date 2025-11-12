@@ -11,7 +11,7 @@ public record CouponUsedEvent(
         Long eventId,
         String eventName,
         CouponStatus couponStatus
-) {
+) implements CouponEvent {
 
     public static CouponUsedEvent of(Long couponId, Long memberId, Long storeId, Long eventId, String eventName) {
         return new CouponUsedEvent(couponId, memberId, storeId, eventId, eventName, CouponStatus.USED);

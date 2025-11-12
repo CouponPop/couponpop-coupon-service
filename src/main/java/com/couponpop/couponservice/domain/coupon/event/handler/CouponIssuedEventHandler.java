@@ -9,88 +9,56 @@ import com.couponpop.couponservice.domain.coupon.event.model.CouponIssuedEvent;
 import com.couponpop.couponservice.domain.coupon.event.retry.CouponIssuedRetryableProcessor;
 import com.couponpop.couponservice.domain.notification.service.NotificationInternalService;
 import com.couponpop.couponservice.domain.store.service.StoreInternalService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class CouponIssuedEventHandler {
-
-    private final StoreInternalService storeInternalService;
-    private final NotificationInternalService notificationInternalService;
+public class CouponIssuedEventHandler extends AbstractCouponEventHandler<CouponIssuedEvent, CouponIssuedMessage> {
 
     private final CouponIssuedRetryableProcessor retryableProcessor;
-    private final CouponPublisher eventPublisher;
+
+    public CouponIssuedEventHandler(StoreInternalService storeInternalService, NotificationInternalService notificationInternalService, CouponPublisher eventPublisher, CouponIssuedRetryableProcessor retryableProcessor) {
+        super(storeInternalService, notificationInternalService, eventPublisher);
+        this.retryableProcessor = retryableProcessor;
+    }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCouponIssuedEvent(CouponIssuedEvent event) {
-        retryableProcessor.process(event); // 쿠폰 사용 이력 적재 (Retry + Recover 적용)
-        log.info("[쿠폰 발급 이벤트]");
-
-        // 알림은 누락되고 늦게 요청되어도 상관없음
-        List<String> tokens = getFcmTokensForMember(event.memberId());
-        if (tokens.isEmpty()) {
-            log.info("[CouponUsedEventHandler] memberId={} 알림 토큰 없음, 이벤트 발행 생략", event.memberId());
-            return;
-        }
-        String storeName = getStoreName(event.storeId());
-
-        publishCouponUsedNotifications(event, tokens, storeName);
+        handleEvent(event, event.memberId(), event.storeId(), () -> retryableProcessor.process(event));
     }
 
-    /**
-     * FCM 토큰 조회
-     */
-    private List<String> getFcmTokensForMember(Long memberId) {
-        return notificationInternalService
-                .fetchFcmTokensByMemberId(memberId)
-                .fcmTokens();
+    @Override
+    protected CouponStatus getCouponStatus() {
+        return CouponStatus.ISSUED;
     }
 
-    /**
-     * 매장 이름 조회
-     */
-    private String getStoreName(Long storeId) {
-        return storeInternalService
-                .findByIdOrElseThrow(storeId)
-                .name();
+    @Override
+    protected CouponIssuedMessage buildMessage(CouponIssuedEvent event, String token, String storeName, LocalDateTime occurredAt) {
+        String traceId = NotificationTraceIdGenerator.generate(event.couponId(), event.memberId(), event.storeId(), event.eventId(), token);
+        return CouponIssuedMessage.of(
+                traceId,
+                token,
+                event.couponId(),
+                event.memberId(),
+                event.storeId(),
+                event.eventId(),
+                storeName,
+                event.eventName(),
+                event.totalCount(),
+                event.issuedCount(),
+                CouponMessageType.ISSUED,
+                occurredAt
+        );
     }
 
-    /**
-     * 쿠폰 발행 알림 메시지 발행
-     */
-    private void publishCouponUsedNotifications(CouponIssuedEvent event, List<String> tokens, String storeName) {
-        Long couponId = event.couponId();
-        Long memberId = event.memberId();
-        Long storeId = event.storeId();
-        Long eventId = event.eventId();
-
-        tokens.forEach(token -> {
-            String traceId = NotificationTraceIdGenerator.generate(couponId, memberId, storeId, eventId, token);
-
-            CouponIssuedMessage message = CouponIssuedMessage.of(
-                    traceId,
-                    token,
-                    couponId,
-                    memberId,
-                    storeId,
-                    storeName,
-                    eventId,
-                    event.totalCount(),
-                    event.issuedCount(),
-                    event.eventName(),
-                    CouponMessageType.ISSUED
-            );
-
-            eventPublisher.publish(CouponStatus.ISSUED, message);
-            log.debug("[CouponUsedEventHandler] 쿠폰 발행 알림 traceId={}, memberId={}, storeId={}", traceId, memberId, storeId);
-        });
+    @Override
+    protected String getHandlerName() {
+        return "CouponIssuedEventHandler";
     }
 
 }

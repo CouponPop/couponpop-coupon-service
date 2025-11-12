@@ -13,7 +13,7 @@ public record CouponIssuedEvent(
         int issuedCount,
         String eventName,
         CouponStatus couponStatus
-) {
+) implements CouponEvent {
 
     public static CouponIssuedEvent of(Long couponId, Long memberId, Long storeId, Long eventId, int totalCount, int issuedCount, String eventName) {
         return new CouponIssuedEvent(couponId, memberId, storeId, eventId, totalCount, issuedCount, eventName, CouponStatus.ISSUED);

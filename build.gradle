@@ -130,7 +130,7 @@ repositories {
 dependencies {
     // [CouponPop Module]
     implementation 'com.couponpop:couponpop-security:0.0.1-SNAPSHOT'
-    implementation 'com.couponpop:couponpop-core:0.0.17-SNAPSHOT'
+    implementation 'com.couponpop:couponpop-core:0.0.20-SNAPSHOT'
 
     // [Spring Boot Starter]
     implementation 'org.springframework.boot:spring-boot-starter-web'
