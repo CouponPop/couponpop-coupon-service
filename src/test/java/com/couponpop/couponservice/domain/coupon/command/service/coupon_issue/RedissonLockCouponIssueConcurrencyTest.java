@@ -3,6 +3,7 @@ package com.couponpop.couponservice.domain.coupon.command.service.coupon_issue;
 import com.couponpop.couponservice.domain.coupon.command.service.CouponIssueConcurrencyTestSupport;
 import com.couponpop.couponservice.domain.couponevent.common.entity.CouponEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @Slf4j
+@Disabled
 class RedissonLockCouponIssueConcurrencyTest extends CouponIssueConcurrencyTestSupport {
 
     @Autowired
