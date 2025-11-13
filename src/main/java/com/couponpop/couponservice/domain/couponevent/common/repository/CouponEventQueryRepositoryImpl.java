@@ -116,13 +116,6 @@ public class CouponEventQueryRepositoryImpl implements CouponEventQueryRepositor
         };
     }
 
-    private BooleanExpression eventStatusEq(QCouponEvent couponEvent, CouponEventStatus eventStatus) {
-        if (ObjectUtils.isEmpty(eventStatus)) {
-            return null;
-        }
-        return couponEvent.couponEventStatus.eq(eventStatus);
-    }
-
     /**
      * no-offset 페이징 조건:
      * 1) eventStartAt > lastStartAt 이면 다음 페이지

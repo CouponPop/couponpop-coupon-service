@@ -22,9 +22,4 @@ public interface CouponEventRepository extends JpaRepository<CouponEvent, Long>,
     @Query("select e from CouponEvent e where e.id = :eventId")
     Optional<CouponEvent> findByEventIdForUpdate(@Param("eventId") Long eventId);
 
-    @Lock(LockModeType.OPTIMISTIC)
-    @Query("select e from CouponEvent e where e.id = :eventId")
-    Optional<CouponEvent> findByEventIdWithOptimisticLock(@Param("eventId") Long eventId);
-
-
 }
