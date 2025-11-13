@@ -39,12 +39,6 @@ public class CouponEvent extends BaseEntity {
     @ColumnDefault("0")
     private int issuedCount;
 
-    @Version
-    private Long version;
-
-    @Enumerated(EnumType.STRING)
-    private CouponEventStatus couponEventStatus;
-
     @Column(name = "store_id", nullable = false)
     private Long storeId;
 
