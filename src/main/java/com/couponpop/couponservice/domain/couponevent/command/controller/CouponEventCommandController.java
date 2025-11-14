@@ -12,13 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping
 @RequiredArgsConstructor
 public class CouponEventCommandController {
 
     private final CouponEventCommandService couponEventQueryService;
 
-    @PostMapping("/owner/coupons/events")
+    @PostMapping("/api/v1/owner/coupons/events")
     public ResponseEntity<ApiResponse<CreateCouponEventResponse>> createCouponEvent(
             @RequestBody @Valid CreateCouponEventRequest request,
             @CurrentMember AuthMember authMember // TODO : 인증 세션 구현되면 변경
@@ -28,4 +28,12 @@ public class CouponEventCommandController {
         return ApiResponse.created(response);
     }
 
+    @PostMapping("/api-test/v1/owner/coupons/events")
+    public ResponseEntity<ApiResponse<CreateCouponEventResponse>> createCouponEventForTest(
+            @RequestBody @Valid CreateCouponEventRequest request,
+            @RequestParam Long memberId
+    ) {
+        CreateCouponEventResponse response = couponEventQueryService.createCouponEvent(request, memberId);
+        return ApiResponse.created(response);
+    }
 }

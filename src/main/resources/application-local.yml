@@ -9,8 +9,8 @@ spring:
         password: ${DB_PASSWORD}
         pool-name: Hikari-MASTER
         driver-class-name: com.mysql.cj.jdbc.Driver
-        maximum-pool-size: 5
-        minimum-idle: 2
+        maximum-pool-size: 10
+        minimum-idle: 10
         connection-timeout: 30000   # 30초
         max-lifetime: 1800000       # 30분
         leak-detection-threshold: 60000  # 누수 감지
@@ -21,8 +21,8 @@ spring:
         password: ${DB_PASSWORD}
         pool-name: Hikari-SLAVE
         driver-class-name: com.mysql.cj.jdbc.Driver
-        maximum-pool-size: 5
-        minimum-idle: 2
+        maximum-pool-size: 10
+        minimum-idle: 10
         connection-timeout: 30000   # 30초
         max-lifetime: 1800000       # 30분
         leak-detection-threshold: 60000  # 누수 감지
@@ -74,6 +74,8 @@ jwt:
       - /docs/**
       - /api/v1/coupons/use-test
       - /actuator/prometheus
+      - /api-test/v1/owner/coupons/events
+      - /api-test/v1/coupons/issue
 
 springdoc:
   swagger-ui:

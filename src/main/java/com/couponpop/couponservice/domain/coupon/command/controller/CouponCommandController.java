@@ -16,23 +16,30 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping
 public class CouponCommandController {
 
     private final CouponCommandService couponCommandService;
     private final CouponIssueFacade couponIssueFacade;
 
-    @PostMapping("/coupons/issue")
+    @PostMapping("/api/v1/coupons/issue")
     public ResponseEntity<ApiResponse<Void>> issueCoupon(@Valid @RequestBody CouponIssueRequest request, @CurrentMember AuthMember authMember) throws InterruptedException {
         LocalDateTime issuedTime = LocalDateTime.now();
         couponIssueFacade.issueCoupon(authMember.id(), request.eventId(), issuedTime);
         return ApiResponse.noContent();
     }
 
-    @PostMapping("/coupons/use")
+    @PostMapping("/api/v1/coupons/use")
     public ResponseEntity<ApiResponse<Void>> useCoupon(@Valid @RequestBody UseCouponRequest request, @CurrentMember AuthMember authMember) {
         LocalDateTime usedAt = LocalDateTime.now();
         couponCommandService.useCoupon(request.storeId(), request.couponId(), request.qrCode(), authMember.id(), usedAt);
+        return ApiResponse.noContent();
+    }
+
+    @PostMapping("/api-test/v1/coupons/issue")
+    public ResponseEntity<ApiResponse<Void>> issueCouponTest(@Valid @RequestBody CouponIssueRequest request, @RequestParam Long memberId) throws InterruptedException {
+        LocalDateTime issuedTime = LocalDateTime.now();
+        couponIssueFacade.issueCoupon(memberId, request.eventId(), issuedTime);
         return ApiResponse.noContent();
     }
 
