@@ -1,0 +1,64 @@
+spring:
+  datasource:
+    master:
+      hikari: &hikari-config
+        jdbc-url: jdbc:tc:mysql:8.0.36:///testdb
+        driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver # Spring Boot 2.3 버전 이후부터 생략 가능
+    slave:
+      hikari: *hikari-config
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false
+        highlight_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  flyway:
+    enabled: true
+
+jwt:
+  secret:
+    key: Y291cG9ucG9wLXRlc3QtanVuaW9yLWJhY2tlbmQtZGV2ZWxvcGVyLXNlY3JldC1rZXktZm9yLWNpLWNkCg==
+    white-list:
+      - /api/v1/auth/signup
+      - /api/v1/auth/login
+      - /actuator/health
+      - /error
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /v3/api-docs/**
+      - /v3/api-docs.yaml
+      - /v3/api-docs.json
+      - /api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+      - /docs/**
+
+client:
+  store-service:
+    name: store-client
+    url: http://localhost:8082
+  notification-service:
+    name: notification-client
+    url: http://localhost:8084
+
+logging:
+  level:
+    # @Transactional AOP 인터셉터: 경계 진입/종료/예외 흐름
+    # 예: "Getting transaction for ...", "Completing transaction for ..."
+    org.springframework.transaction.interceptor: TRACE
+#    org.springframework.transaction: TRACE
+    # Hibernate가 실제로 실행한 SQL
+    # 예: "select ...", "update wallet set ..."
+#    org.hibernate.SQL: DEBUG
+
+    # Hibernate 6 파라미터 바인딩 값
+#    org.hibernate.orm.jdbc.bind: TRACE
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+    # JPA 트랜잭션 매니저: BEGIN/COMMIT/ROLLBACK, rollback-only, 참여/중단/재개(suspend/resume)
+    # 예: "Creating new transaction ...", "Initiating transaction rollback"
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG

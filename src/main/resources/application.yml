@@ -1,1 +1,13 @@
-spring.application.name=couponpop-coupon-service
+server:
+  port: 8083
+
+spring:
+  application:
+    name: coupon-service
+  profiles:
+    active: local
+
+logging:
+  level:
+    com.couponpop.couponservice.domain.store.client: DEBUG
+    com.couponpop.couponservice.domain.couponevent: DEBUG

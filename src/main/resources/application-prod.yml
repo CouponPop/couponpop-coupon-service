@@ -1,0 +1,109 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: coupon-service
+  config: # AWS Parameter Store에서 설정을 가져오도록 Spring Cloud AWS Config 설정
+    import: optional:aws-parameterstore:/couponpop/prod/coupon-service/
+  master:
+    hikari:
+      jdbc-url: ${DB_MASTER_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      pool-name: Hikari-MASTER
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000   # 30초
+      max-lifetime: 1800000       # 30분
+      leak-detection-threshold: 60000  # 누수 감지
+  slave:
+    hikari:
+      jdbc-url: ${DB_SLAVE_URL}
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}
+      pool-name: Hikari-SLAVE
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000   # 30초
+      max-lifetime: 1800000       # 30분
+      leak-detection-threshold: 60000  # 누수 감지
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: false
+        highlight_sql: false
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 1
+    validate-on-migrate: true
+    clean-disabled: true
+
+fcm:
+  firebase-config-path: file:/app/config/serviceAccountKey.json
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+    white-list:
+      - /api/v1/auth/signup
+      - /api/v1/auth/login
+      - /actuator/health
+      - /error
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /v3/api-docs/**
+      - /v3/api-docs.yaml
+      - /v3/api-docs.json
+      - /api-docs/**
+      - /swagger-resources/**
+      - /webjars/**
+      - /docs/**
+      - /actuator/prometheus
+
+
+client:
+  store-service:
+    name: store-client
+    url: http://store.couponpop.internal:8080
+  notification-service:
+    name: notification-client
+    url: http://notification.couponpop.internal:8080
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN

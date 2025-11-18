@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:4.1.5-management
+    container_name: couponpop-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "15672:15672"  # 관리 UI (웹 브라우저 접근용)
+      - "5672:5672"    # AMQP 메시지 브로커 포트
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  rabbitmq-data:
+    driver: local
+
+networks:
+  internal-network:
+    driver: bridge
