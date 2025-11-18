@@ -102,7 +102,7 @@ RABBITMQ_PORT=5672
 
 4.  **(필수) DB 마이그레이션**:
     * `application-local.yml`에 `spring.flyway.enabled=true`가 설정되어 있는지 확인합니다.
-    * 애플리케이션을 실행하면 Flyway가 자동으로 `V1`, `V2`, `V3` 스크립트를 실행하여 `members` 테이블을 Master DB에 생성합니다.
+    * 애플리케이션을 실행하면 Flyway가 자동으로 `V1`, `V2`, `V3` 스크립트를 실행하여 `coupon` 테이블을 Master DB에 생성합니다.
 
 5.  **애플리케이션 실행**:
     * IDE의 실행 설정(Run Configuration)에서 Active Profile을 `local`로 설정하여 실행합니다.
@@ -112,11 +112,4 @@ RABBITMQ_PORT=5672
     ```
 
 6.  **(선택) 연동 테스트**:
-    * `api-gateway`, `notification-service` (Port 8084)를 함께 실행하면, 로그아웃/회원탈퇴 시 OpenFeign을 통한 FCM 토큰 만료 요청이 정상적으로 동작하는지 확인할 수 있습니다.
-
-## 7. 운영 시 참고 사항
-
-* **[AWS Parameter Store]** 운영(`prod`) 환경의 모든 민감 정보(DB, Redis, JWT Key 등)는 `build.gradle`의 `spring-cloud-aws-starter-parameter-store` 의존성을 통해 AWS Parameter Store에서 주입받습니다.
-* **[DB Replication]** `DataSourceConfig`에 따라 Master/Slave DB가 분리되어 있습니다. `@Transactional(readOnly = true)`가 붙은 서비스 로직은 **Slave DB**로, 쓰기 트랜잭션은 **Master DB**로 자동 라우팅됩니다.
-* **[Redis 의존성]** 이 서비스는 `couponpop-security-module`을 통해 Redis에 강하게 의존합니다. Redis는 로그아웃/회원탈퇴 시 JWT를 무효화하는 **블랙리스트 저장소**로 사용됩니다. Redis 장애 시 토큰 무효화가 지연될 수 있습니다.
-* **[모니터링]** `/actuator/prometheus` 엔드포인트를 통해 서비스의 상세 메트릭(JVM, DB Pool, API Latency 등)이 노출됩니다.
+    * `api-gateway`, `store-service` (Port 8083)를 함께 실행하면, 쿠폰 이벤트 생성 시 OpenFeign을 통한 이벤트 생성이 정상적으로 동작하는지 확인할 수 있습니다.
